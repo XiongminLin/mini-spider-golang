@@ -1,0 +1,39 @@
+[背景]:
+    在调研过程中，经常需要对一些网站进行定向抓取。由于go包含各种强大的库，使用go做定向抓取比较简单。请使用go开发一个迷你定向抓取器mini_spider，实现对种子链接的抓取，并把URL长相符合特定pattern的网页保存到磁盘上。
+
+[程序运行]：
+   ./mini_spider -c ../conf -l ../log
+
+[配置文件spider.conf]：
+    [spider]
+    # 种子文件路径 
+    urlListFile = ../data/url.data
+    # 抓取结果存储目录 
+    outputDirectory = ../output
+    # 最大抓取深度(种子为0级)
+    maxDepth = 1
+    # 抓取间隔. 单位: 秒 
+    crawlInterval =  1
+    # 抓取超时. 单位: 秒 
+    crawlTimeout = 1
+    # 需要存储的目标网页URL pattern(正则表达式)
+    targetUrl = .*.(htm|html)$
+    # 抓取routine数 
+    threadCount = 8
+   
+[种子文件为json格式，示例如下]：
+   [
+     http://www.baidu.com,
+     http://www.sina.com.cn,
+     ...
+   ]
+  
+[要求和注意事项]：
+    1. 需要支持命令行参数处理。具体包含:  -h(帮助)、-v(版本)、-c(配置文件路径）、-l（日志文件路径，2个日志：mini_spider.log和mini_spider.wf.log)
+    2. 抓取网页的顺序没有限制
+    3. 单个网页抓取或解析失败，不能导致整个程序退出。需要在日志中记录下错误原因并继续。
+    4. 当程序完成所有抓取任务后，必须优雅退出
+    5. 从HTML提取链接时需要处理相对路径和绝对路径
+    6. 需要能够处理不同字符编码的网页(例如utf-8或gbk)
+    7. 网页存储时每个网页单独存为一个文件，以URL为文件名。注意对URL中的特殊字符，需要做转义
+    8. 要求支持多routine并行抓取（注意：这里并不是指简单设置GOMAXPROCS>1)
